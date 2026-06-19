@@ -1,0 +1,20 @@
+page {
+  background-color: #f8f8f8;
+}
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14rpx 24rpx;
+  background-color: #ffffff;
+}
+.card {
+  background-color: #ffffff;
+  border-radius: 20rpx;
+  margin: 20rpx 20rpx 0;
+  padding: 24rpx;
+}
+.button-primary {
+  background-color: #1AAD19;
+  color: #ffffff;
+}

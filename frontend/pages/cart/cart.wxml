@@ -1,0 +1,31 @@
+<view class="page">
+  <view class="cart-header card">
+    <checkbox-group bindchange="onCheckAllChange">
+      <label class="check-all">
+        <checkbox value="all" checked="{{allChecked}}" /> 全选
+      </label>
+    </checkbox-group>
+  </view>
+  <scroll-view scroll-y class="cart-list">
+    <block wx:for="{{cart}}" wx:key="id">
+      <view class="cart-item">
+        <checkbox value="{{item.id}}" checked="{{item.checked}}" bindchange="onItemCheck"></checkbox>
+        <image src="{{item.cover}}" class="item-image" mode="aspectFill" bindtap="viewDetail" data-id="{{item.id}}"></image>
+        <view class="item-body">
+          <text class="item-title">{{item.name}}</text>
+          <text class="item-price">￥{{item.price}}</text>
+          <view class="quantity-row">
+            <button class="step" bindtap="changeQuantity" data-id="{{item.id}}" data-action="minus">-</button>
+            <text>{{item.quantity}}</text>
+            <button class="step" bindtap="changeQuantity" data-id="{{item.id}}" data-action="plus">+</button>
+          </view>
+        </view>
+        <button class="delete-btn" bindtap="removeItem" data-id="{{item.id}}">删除</button>
+      </view>
+    </block>
+  </scroll-view>
+  <view class="cart-footer card">
+    <text>总价：￥{{totalPrice}}</text>
+    <button class="button-primary" bindtap="goToCheckout">去结算</button>
+  </view>
+</view>

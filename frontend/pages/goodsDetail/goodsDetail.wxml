@@ -1,0 +1,14 @@
+<view class="page">
+  <view class="goods-panel">
+    <image src="{{goods.cover}}" mode="aspectFill" class="detail-image" bindtap="previewImage"></image>
+    <view class="detail-info">
+      <text class="detail-title">{{goods.name}}</text>
+      <text class="detail-price">￥{{goods.price}}</text>
+      <text class="detail-desc">{{goods.detail}}</text>
+      <view class="actions">
+        <button bindtap="addToCart" class="button-primary">加入购物车</button>
+        <button bindtap="createOrder">立即购买</button>
+      </view>
+    </view>
+  </view>
+</view>

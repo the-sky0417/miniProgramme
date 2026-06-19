@@ -1,0 +1,18 @@
+<view class="page">
+  <view class="search-bar">
+    <input class="search-input" placeholder="搜索商品" value="{{keyword}}" bindinput="onInput" />
+    <button bindtap="onSearch" class="button-primary">搜索</button>
+  </view>
+  <scroll-view scroll-y class="goods-list" bindscrolltolower="onReachBottom" lower-threshold="100">
+    <block wx:for="{{goodsList}}" wx:key="id">
+      <navigator url="/pages/goodsDetail/goodsDetail?id={{item.id}}" class="goods-item">
+        <image src="{{item.cover}}" mode="aspectFill" class="goods-image"></image>
+        <view class="goods-info">
+          <text class="goods-name">{{item.name}}</text>
+          <text class="goods-price">￥{{item.price}}</text>
+        </view>
+      </navigator>
+    </block>
+    <view class="loading">{{loadingText}}</view>
+  </scroll-view>
+</view>

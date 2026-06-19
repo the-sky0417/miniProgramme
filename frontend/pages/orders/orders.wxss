@@ -1,0 +1,8 @@
+.page { padding: 20rpx; }
+.order-filter { display: flex; justify-content: space-between; margin-bottom: 20rpx; padding: 20rpx; }
+.order-filter button { flex: 1; margin-right: 12rpx; }
+.order-filter button:last-child { margin-right: 0; }
+.order-list { height: calc(100vh - 180rpx); }
+.order-card { background: #fff; border-radius: 20rpx; padding: 24rpx; margin-bottom: 20rpx; }
+.order-no { display: block; margin-bottom: 12rpx; color: #333; }
+.loading { text-align: center; color: #999; padding: 20rpx; }
