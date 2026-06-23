@@ -14,7 +14,7 @@ Page({
         wx.login({
           success: loginRes => {
             wx.request({
-              url: `${app.globalData.apiBase}/user_login.php`,
+              url: `${app.globalData.apiBase}/user_register.php`,
               method: 'POST',
               data: {
                 code: loginRes.code,
@@ -27,7 +27,9 @@ Page({
                   const userInfo = response.data.data;
                   wx.setStorageSync('userInfo', userInfo);
                   this.setData({ userInfo });
-                  wx.showToast({ title: '登录成功' });
+                  wx.showToast({ title: '登录/注册成功' });
+                } else {
+                  wx.showToast({ title: response.data.message || '登录失败', icon: 'none' });
                 }
               }
             });

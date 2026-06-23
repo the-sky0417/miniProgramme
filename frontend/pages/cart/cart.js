@@ -8,28 +8,38 @@ Page({
     this.loadCart();
   },
   loadCart() {
-    const cart = wx.getStorageSync('cart') || [];
-    const allChecked = cart.length > 0 && cart.every(item => item.checked);
-    const totalPrice = cart.reduce((sum, item) => item.checked ? sum + item.price * item.quantity : sum, 0);
-    this.setData({ cart, totalPrice, allChecked });
+    const userInfo = wx.getStorageSync('userInfo');
+    if (userInfo && userInfo.id) {
+      wx.request({
+        url: `${getApp().globalData.apiBase}/cart.php?action=list`,
+        method: 'GET',
+        data: { user_id: userInfo.id },
+        success: res => {
+          if (res.data.code === 0) {
+            const cart = res.data.data.map(item => ({ id: Number(item.goods_id), cart_id: Number(item.id), name: item.name, price: Number(item.price), cover: item.cover, quantity: Number(item.quantity), checked: true }));
+            const allChecked = cart.length > 0 && cart.every(item => item.checked);
+            const totalPrice = cart.reduce((sum, item) => item.checked ? sum + item.price * item.quantity : sum, 0);
+            this.setData({ cart, totalPrice, allChecked });
+          }
+        }
+      });
+    } else {
+      const cart = wx.getStorageSync('cart') || [];
+      const allChecked = cart.length > 0 && cart.every(item => item.checked);
+      const totalPrice = cart.reduce((sum, item) => item.checked ? sum + item.price * item.quantity : sum, 0);
+      this.setData({ cart, totalPrice, allChecked });
+    }
   },
   onItemCheck(e) {
     const id = Number(e.currentTarget.dataset.id);
     const checked = e.detail.value.length > 0;
-    const cart = this.data.cart.map(item => {
-      if (item.id === id) {
-        item.checked = checked;
-      }
-      return item;
-    });
-    wx.setStorageSync('cart', cart);
+    const cart = this.data.cart.map(item => ({ ...item, checked: item.id === id ? checked : item.checked }));
     this.setData({ cart });
     this.loadCart();
   },
   onCheckAllChange(e) {
     const checked = e.detail.value.length > 0;
     const cart = this.data.cart.map(item => ({ ...item, checked }));
-    wx.setStorageSync('cart', cart);
     this.setData({ cart, allChecked: checked });
     this.loadCart();
   },
@@ -39,19 +49,37 @@ Page({
     const cart = this.data.cart.map(item => {
       if (item.id === id) {
         item.quantity = action === 'plus' ? item.quantity + 1 : Math.max(1, item.quantity - 1);
+        if (item.cart_id) {
+          wx.request({
+            url: `${getApp().globalData.apiBase}/cart.php`,
+            method: 'POST',
+            data: { action: 'update', id: item.cart_id, quantity: item.quantity },
+            header: { 'content-type': 'application/x-www-form-urlencoded' }
+          });
+        }
       }
       return item;
     });
-    wx.setStorageSync('cart', cart);
     this.setData({ cart });
     this.loadCart();
   },
   removeItem(e) {
     const id = Number(e.currentTarget.dataset.id);
-    const cart = this.data.cart.filter(item => item.id !== id);
-    wx.setStorageSync('cart', cart);
-    this.setData({ cart });
-    this.loadCart();
+    const item = this.data.cart.find(it => it.id === id);
+    if (item && item.cart_id) {
+      wx.request({
+        url: `${getApp().globalData.apiBase}/cart.php`,
+        method: 'POST',
+        data: { action: 'remove', id: item.cart_id },
+        header: { 'content-type': 'application/x-www-form-urlencoded' },
+        success: () => { this.loadCart(); }
+      });
+    } else {
+      const cart = this.data.cart.filter(item => item.id !== id);
+      wx.setStorageSync('cart', cart);
+      this.setData({ cart });
+      this.loadCart();
+    }
   },
   goToCheckout() {
     const selected = this.data.cart.filter(item => item.checked);

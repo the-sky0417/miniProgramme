@@ -19,15 +19,37 @@ Page({
     });
   },
   addToCart() {
-    const cart = wx.getStorageSync('cart') || [];
-    const exist = cart.find(item => item.id === this.data.goods.id);
-    if (exist) {
-      exist.quantity += 1;
+    const userInfo = wx.getStorageSync('userInfo');
+    if (userInfo && userInfo.id) {
+      wx.request({
+        url: `${getApp().globalData.apiBase}/cart.php`,
+        method: 'POST',
+        data: {
+          action: 'add',
+          user_id: userInfo.id,
+          goods_id: this.data.goods.id,
+          quantity: 1
+        },
+        header: { 'content-type': 'application/x-www-form-urlencoded' },
+        success: res => {
+          if (res.data.code === 0) {
+            wx.showToast({ title: '已加入购物车', icon: 'success' });
+          } else {
+            wx.showToast({ title: res.data.message || '加入购物车失败', icon: 'none' });
+          }
+        }
+      });
     } else {
-      cart.push({ ...this.data.goods, quantity: 1, checked: true });
+      const cart = wx.getStorageSync('cart') || [];
+      const exist = cart.find(item => item.id === this.data.goods.id);
+      if (exist) {
+        exist.quantity += 1;
+      } else {
+        cart.push({ ...this.data.goods, quantity: 1, checked: true });
+      }
+      wx.setStorageSync('cart', cart);
+      wx.showToast({ title: '已加入购物车', icon: 'success' });
     }
-    wx.setStorageSync('cart', cart);
-    wx.showToast({ title: '已加入购物车', icon: 'success' });
   },
   createOrder() {
     const userInfo = wx.getStorageSync('userInfo');
